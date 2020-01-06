@@ -8,8 +8,8 @@ using namespace cv;
 Color white, gray, green;
 Light sunLight;
 Map map;
-Material wallMaterial, playerMaterial;
-Texture wallTexture;
+Material wallMaterial, playerMaterial, endMaterial;
+Texture wallTexture, endTexture;
 Player player;
 Camare fristPersonCamare, globalCamare;
 ViewMode viewMode;
@@ -122,14 +122,6 @@ void drawCube(Wall wall, bool isPlayer) {
 	vertexesToQuad(quads[4], vertexes[0], vertexes[3], vertexes[7], vertexes[4]);
 	vertexesToQuad(quads[5], vertexes[4], vertexes[5], vertexes[6], vertexes[7]);
 
-	glColor3f(white.r, white.g, white.b);
-
-	glMaterialfv(GL_FRONT, GL_AMBIENT, wallMaterial.ambient);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, wallMaterial.diffuse);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, wallMaterial.specular);
-	glMaterialfv(GL_FRONT, GL_EMISSION, wallMaterial.emission);
-	glMaterialfv(GL_FRONT, GL_SHININESS, &wallMaterial.shininess);
-
 	if (isPlayer) {
 		glMaterialfv(GL_FRONT, GL_AMBIENT, playerMaterial.ambient);
 		glMaterialfv(GL_FRONT, GL_DIFFUSE, playerMaterial.diffuse);
@@ -149,6 +141,12 @@ void drawCube(Wall wall, bool isPlayer) {
 	}
 	else {
 		glColor3f(white.r, white.g, white.b);
+
+		glMaterialfv(GL_FRONT, GL_AMBIENT, wallMaterial.ambient);
+		glMaterialfv(GL_FRONT, GL_DIFFUSE, wallMaterial.diffuse);
+		glMaterialfv(GL_FRONT, GL_SPECULAR, wallMaterial.specular);
+		glMaterialfv(GL_FRONT, GL_EMISSION, wallMaterial.emission);
+		glMaterialfv(GL_FRONT, GL_SHININESS, &wallMaterial.shininess);
 
 		glEnable(GL_TEXTURE_2D);
 
@@ -175,10 +173,8 @@ void drawCube(Wall wall, bool isPlayer) {
 	}
 }
 
-void loadTexture(Texture& texture) {
-	texture.id;
-
-	glGenTextures(map.width * map.height * 6, &texture.id);
+void loadTexture(Texture &texture) {
+	glGenTextures(1, &texture.id);
 	glBindTexture(GL_TEXTURE_2D, texture.id);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -205,6 +201,56 @@ void drawMaze(Map map) {
 
 }
 
+void drawCongratulation() {
+	GLint viewPort[4];
+	GLdouble modelView[16];
+	GLdouble projection[16];
+
+	glGetIntegerv(GL_VIEWPORT, viewPort);
+	glGetDoublev(GL_MODELVIEW_MATRIX, modelView);
+	glGetDoublev(GL_PROJECTION_MATRIX, projection);
+	Vector2d pointOld[4];
+	Vector3d pointNew[4];
+
+	pointOld[0].x = WINDOW_SIZE_WIDTH / 4;
+	pointOld[0].y = WINDOW_SIZE_HEIGHT / 4;
+	pointOld[1].x = WINDOW_SIZE_WIDTH / 4;
+	pointOld[1].y = WINDOW_SIZE_HEIGHT / 4 * 3;
+	pointOld[2].x = WINDOW_SIZE_WIDTH / 4 * 3;
+	pointOld[2].y = WINDOW_SIZE_HEIGHT / 4 * 3;
+	pointOld[3].x = WINDOW_SIZE_WIDTH / 4 * 3;
+	pointOld[3].y = WINDOW_SIZE_HEIGHT / 4;
+
+
+	for (int i = 0; i < 4; i++) {
+		gluUnProject(pointOld[i].x, pointOld[i].y, 0.1, modelView, projection, viewPort, &pointNew[i].x, &pointNew[i].y, &pointNew[i].z);
+	}
+
+
+	glColor3f(white.r, white.g, white.b);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, endMaterial.ambient);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, endMaterial.diffuse);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, endMaterial.specular);
+	glMaterialfv(GL_FRONT, GL_EMISSION, endMaterial.emission);
+	glMaterialfv(GL_FRONT, GL_SHININESS, &endMaterial.shininess);
+
+
+	glEnable(GL_TEXTURE_2D);
+
+	glBindTexture(GL_TEXTURE_2D, endTexture.id);
+
+
+	glBegin(GL_POLYGON);
+	glTexCoord2f(0.0f, 1.0f); glVertex3f(pointNew[0].x, pointNew[0].y, pointNew[0].z);
+	glTexCoord2f(0.0f, 0.0f); glVertex3f(pointNew[1].x, pointNew[1].y, pointNew[1].z);
+	glTexCoord2f(1.0f, 0.0f); glVertex3f(pointNew[2].x, pointNew[2].y, pointNew[2].z);
+	glTexCoord2f(1.0f, 1.0f); glVertex3f(pointNew[3].x, pointNew[3].y, pointNew[3].z);
+	glEnd();
+
+
+	glDisable(GL_TEXTURE_2D);
+}
+
 void render() {
 	glClearColor(gray.r, gray.g, gray.b, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -214,25 +260,26 @@ void render() {
 	gluPerspective(45, 1, 1, 10000);
 
 	switch (viewMode) {
-	case VIEW_MODE_GLOBAL:
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		gluLookAt(
-			globalCamare.position[0], globalCamare.position[1], globalCamare.position[2],
-			globalCamare.lookAt[0], globalCamare.lookAt[1], globalCamare.lookAt[2],
-			globalCamare.direction[0], globalCamare.direction[1], globalCamare.direction[2]);
-		break;
+		case VIEW_MODE_GLOBAL:
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			gluLookAt(
+				globalCamare.position[0], globalCamare.position[1], globalCamare.position[2],
+				globalCamare.lookAt[0], globalCamare.lookAt[1], globalCamare.lookAt[2],
+				globalCamare.direction[0], globalCamare.direction[1], globalCamare.direction[2]);
+			break;
 
-	case VIEW_MODE_FRIST_PERSON:
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		gluLookAt(
-			fristPersonCamare.position[0], fristPersonCamare.position[1], fristPersonCamare.position[2],
-			fristPersonCamare.lookAt[0], fristPersonCamare.lookAt[1], fristPersonCamare.lookAt[2],
-			fristPersonCamare.direction[0], fristPersonCamare.direction[1], fristPersonCamare.direction[2]);
-		break;
+		case VIEW_MODE_FRIST_PERSON:
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			gluLookAt(
+				fristPersonCamare.position[0], fristPersonCamare.position[1], fristPersonCamare.position[2],
+				fristPersonCamare.lookAt[0], fristPersonCamare.lookAt[1], fristPersonCamare.lookAt[2],
+				fristPersonCamare.direction[0], fristPersonCamare.direction[1], fristPersonCamare.direction[2]);
+			break;
 	}
 
+	loadTexture(wallTexture);
 
 	glLightfv(GL_LIGHT0, GL_POSITION, sunLight.position);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, sunLight.ambient);
@@ -252,6 +299,10 @@ void render() {
 	playerCube.z = 0;
 	playerCube.size = PLAYER_CUBE_SIZE;
 	drawCube(playerCube, true);
+
+	if (player.x == endPosition.x && player.y == endPosition.y) {
+		drawCongratulation();
+	}
 
 	glutSwapBuffers();
 }
@@ -332,7 +383,7 @@ void init() {
 	playerMaterial.emission[3] = 0;
 	playerMaterial.shininess = 20;
 
-	wallTexture.img = imread("$(SolutionDir)/Maze/texture.bmp");
+	wallTexture.img = imread(".//texture.jpg");
 	wallTexture.width = wallTexture.img.cols;
 	wallTexture.height = wallTexture.img.rows;
 
@@ -366,10 +417,123 @@ void init() {
 	setCamareDirection(globalCamare, GLOBAL_CAMARE_DIRECTION_X, GLOBAL_CAMARE_DIRECTION_Y, GLOBAL_CAMARE_DIRECTION_Z);
 
 	setFristPersonCamareByPlayer();
+}
 
-	mousePosition.x = 0.0f;
-	mousePosition.y = 0.0f;
 
+void onSpecialKeyDown(int key, int x, int y) {
+	switch (key) {
+	case GLUT_KEY_F1:
+		viewMode = VIEW_MODE_FRIST_PERSON;
+		glutPostRedisplay();
+		break;
+	case GLUT_KEY_F2:
+		viewMode = VIEW_MODE_GLOBAL;
+		glutPostRedisplay();
+		break;
+	}
+
+	if (viewMode == VIEW_MODE_FRIST_PERSON) {
+		switch (key) {
+		case GLUT_KEY_UP:
+			switch (player.face) {
+			case PLAYER_FACE_UP:
+				if (player.x > 0) {
+					if (map.blocks[player.x - 1][player.y] != MAP_BLOCK_CUBE) {
+						player.x -= 1;
+					}
+				}
+				break;
+			case PLAYER_FACE_DOWN:
+				if (player.x < map.height - 1) {
+					if (map.blocks[player.x + 1][player.y] != MAP_BLOCK_CUBE) {
+						player.x += 1;
+					}
+				}
+				break;
+			case PLAYER_FACE_LEFT:
+				if (player.y > 0) {
+					if (map.blocks[player.x][player.y - 1] != MAP_BLOCK_CUBE) {
+						player.y -= 1;
+					}
+				}
+				break;
+			case PLAYER_FACE_RIGHT:
+				if (player.y < map.width - 1) {
+					if (map.blocks[player.x][player.y + 1] != MAP_BLOCK_CUBE) {
+						player.y += 1;
+					}
+				}
+				break;
+			}
+			break;
+		case GLUT_KEY_DOWN:
+			switch (player.face) {
+			case PLAYER_FACE_UP:
+				if (player.x < map.height - 1) {
+					if (map.blocks[player.x + 1][player.y] != MAP_BLOCK_CUBE) {
+						player.x += 1;
+					}
+				}
+				break;
+			case PLAYER_FACE_DOWN:
+				if (player.x > 0) {
+					if (map.blocks[player.x - 1][player.y] != MAP_BLOCK_CUBE) {
+						player.x -= 1;
+					}
+				}
+				break;
+			case PLAYER_FACE_LEFT:
+				if (player.y < map.width - 1) {
+					if (map.blocks[player.x][player.y + 1] != MAP_BLOCK_CUBE) {
+						player.y += 1;
+					}
+				}
+				break;
+			case PLAYER_FACE_RIGHT:
+				if (player.y > 0) {
+					if (map.blocks[player.x][player.y - 1] != MAP_BLOCK_CUBE) {
+						player.y -= 1;
+					}
+				}
+				break;
+			}
+			break;
+		case GLUT_KEY_LEFT:
+			switch (player.face) {
+			case PLAYER_FACE_UP:
+				player.face = PLAYER_FACE_LEFT;
+				break;
+			case PLAYER_FACE_DOWN:
+				player.face = PLAYER_FACE_RIGHT;
+				break;
+			case PLAYER_FACE_LEFT:
+				player.face = PLAYER_FACE_DOWN;
+				break;
+			case PLAYER_FACE_RIGHT:
+				player.face = PLAYER_FACE_UP;
+				break;
+			}
+			break;
+		case GLUT_KEY_RIGHT:
+			switch (player.face) {
+			case PLAYER_FACE_UP:
+				player.face = PLAYER_FACE_RIGHT;
+				break;
+			case PLAYER_FACE_DOWN:
+				player.face = PLAYER_FACE_LEFT;
+				break;
+			case PLAYER_FACE_LEFT:
+				player.face = PLAYER_FACE_UP;
+				break;
+			case PLAYER_FACE_RIGHT:
+				player.face = PLAYER_FACE_DOWN;
+				break;
+			}
+			break;
+		}
+		setFristPersonCamareByPlayer();
+		glutPostRedisplay();
+	}
 }
 
 int main(int argc, char *argv[]) {
@@ -384,6 +548,8 @@ int main(int argc, char *argv[]) {
 	glutCreateWindow("Maze");
 
 	glutDisplayFunc(render);
+
+	glutSpecialFunc(onSpecialKeyDown);
 
 	// Loop
 	glutMainLoop();

@@ -1,0 +1,34 @@
+# Maze-opencv
+## Installation Guide
+1. Opencv2 Required. Link : <https://opencv.org/releases/>
+2. Copy opencv/build/include to your solutiondir.
+3. C/C++ -> General -> Additonal Dependencis : input the path where you placed the include downloaded from opencv
+4. Linker -> input -> Additional Dependencis : opencv_world420.lib & opencv_world420d.lib.
+5. Copy opencv_world420.dll & opencv_world420d.dll from opencvdir to solutiondir.
+
+## The concept of the Maze Game
+1. Using an array to create a map
+2. Render the maze by for-loop, the maze is combined by walls
+3. Spawn the player in the place of '2'
+4. The player can play in first-person and third-person
+5. allow the player to move around the map using the WASD keys
+6.  when the player manages to get to '3' the finish the map (win)
+7. the player can not pass through or move walls, '1' but can walk on empty tiles '0' as well as over the exit 'E' 
+
+## Controller
+F1: first person view  
+F2: third person view  
+UP: move forward   
+DOWN: move back  
+LEFT: left turn  
+RIGHT: right turn  
+
+## Program brief
+1. Using Opencv lib to develop which is also included glut and glew.
+2. The wall are rander by 8 vertexes which are the concer of a rentangle. (and 6 edge of a retangle)
+3. The maze are combined by many wall. (Using for-loop to read an array and render a map by wall)
+4. The map have 4 elements which is start position, end position, path and wall
+5. Using if-else func to check collision, if there is a wall in front of the play who can't move forward.
+6. Generate the window and model by glut instruction/code.
+
+A video playlist regarding the point produced at here: https://www.youtube.com/playlist?list=PLu4YX7tAPZM3l7nXn-QJ90r8TFmM4lc_l

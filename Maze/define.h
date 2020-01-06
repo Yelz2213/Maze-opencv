@@ -142,3 +142,14 @@ struct Vector2f {
 	GLfloat x;
 	GLfloat y;
 };
+
+struct Vector2d {
+	GLdouble x;
+	GLdouble y;
+};
+
+struct Vector3d {
+	GLdouble x;
+	GLdouble y;
+	GLdouble z;
+};

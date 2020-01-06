@@ -1,6 +1,18 @@
 ﻿  main.cpp
 C:\Users\user\source\repos\Maze\Maze\main.cpp(62,63): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
 C:\Users\user\source\repos\Maze\Maze\main.cpp(61,31): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
-C:\Users\user\source\repos\Maze\Maze\main.cpp(250,68): warning C4244: '=': conversion from 'int' to 'GLfloat', possible loss of data
-C:\Users\user\source\repos\Maze\Maze\main.cpp(251,100): warning C4244: '=': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Users\user\source\repos\Maze\Maze\main.cpp(244,80): warning C4244: 'argument': conversion from 'GLdouble' to 'GLfloat', possible loss of data
+C:\Users\user\source\repos\Maze\Maze\main.cpp(244,65): warning C4244: 'argument': conversion from 'GLdouble' to 'GLfloat', possible loss of data
+C:\Users\user\source\repos\Maze\Maze\main.cpp(244,50): warning C4244: 'argument': conversion from 'GLdouble' to 'GLfloat', possible loss of data
+C:\Users\user\source\repos\Maze\Maze\main.cpp(245,80): warning C4244: 'argument': conversion from 'GLdouble' to 'GLfloat', possible loss of data
+C:\Users\user\source\repos\Maze\Maze\main.cpp(245,65): warning C4244: 'argument': conversion from 'GLdouble' to 'GLfloat', possible loss of data
+C:\Users\user\source\repos\Maze\Maze\main.cpp(245,50): warning C4244: 'argument': conversion from 'GLdouble' to 'GLfloat', possible loss of data
+C:\Users\user\source\repos\Maze\Maze\main.cpp(246,80): warning C4244: 'argument': conversion from 'GLdouble' to 'GLfloat', possible loss of data
+C:\Users\user\source\repos\Maze\Maze\main.cpp(246,65): warning C4244: 'argument': conversion from 'GLdouble' to 'GLfloat', possible loss of data
+C:\Users\user\source\repos\Maze\Maze\main.cpp(246,50): warning C4244: 'argument': conversion from 'GLdouble' to 'GLfloat', possible loss of data
+C:\Users\user\source\repos\Maze\Maze\main.cpp(247,80): warning C4244: 'argument': conversion from 'GLdouble' to 'GLfloat', possible loss of data
+C:\Users\user\source\repos\Maze\Maze\main.cpp(247,65): warning C4244: 'argument': conversion from 'GLdouble' to 'GLfloat', possible loss of data
+C:\Users\user\source\repos\Maze\Maze\main.cpp(247,50): warning C4244: 'argument': conversion from 'GLdouble' to 'GLfloat', possible loss of data
+C:\Users\user\source\repos\Maze\Maze\main.cpp(297,68): warning C4244: '=': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Users\user\source\repos\Maze\Maze\main.cpp(298,100): warning C4244: '=': conversion from 'int' to 'GLfloat', possible loss of data
   Maze.vcxproj -> C:\Users\user\source\repos\Maze\x64\Debug\Maze.exe
