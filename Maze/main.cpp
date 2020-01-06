@@ -1,4 +1,4 @@
-#include <GL\glut.h>
+﻿#include <GL\glut.h>
 #include <opencv2\core\core.hpp>
 #include <opencv2\highgui\highgui.hpp>
 #include <opencv2\imgproc\imgproc.hpp>
@@ -9,11 +9,12 @@ Color white, gray, green;
 Light sunLight;
 Map map;
 Material wallMaterial, playerMaterial;
-Texture wall;
+Texture wallTexture;
 Player player;
 Camare fristPersonCamare, globalCamare;
 ViewMode viewMode;
 Vector2f mousePosition;
+Wall playerCube;
 
 void xyzToVertex(Vertex& vertex, float x, float y, float z) {
 	// set position of vertex
@@ -100,8 +101,7 @@ void setFristPersonCamareByPlayer() {
 	setCamareDirection(fristPersonCamare, 0, 0, 1);
 }
 
-
-void drawWall(Wall wall){
+void drawCube(Wall wall, bool isPlayer) {
 	//The 8 vertexs of a wall
 	Vertex vertexes[8];
 	xyzToVertex(vertexes[0], wall.x, wall.y, wall.z);
@@ -130,15 +130,61 @@ void drawWall(Wall wall){
 	glMaterialfv(GL_FRONT, GL_EMISSION, wallMaterial.emission);
 	glMaterialfv(GL_FRONT, GL_SHININESS, &wallMaterial.shininess);
 
+	if (isPlayer) {
+		glMaterialfv(GL_FRONT, GL_AMBIENT, playerMaterial.ambient);
+		glMaterialfv(GL_FRONT, GL_DIFFUSE, playerMaterial.diffuse);
+		glMaterialfv(GL_FRONT, GL_SPECULAR, playerMaterial.specular);
+		glMaterialfv(GL_FRONT, GL_EMISSION, playerMaterial.emission);
+		glMaterialfv(GL_FRONT, GL_SHININESS, &playerMaterial.shininess);
 
-	for (int i = 0; i < 6; i++) {
-		glBegin(GL_QUADS);
-		for (int j = 0; j < 4; j++) {
-			glVertex3f(quads[i].vertexes[j].x, quads[i].vertexes[j].y, quads[i].vertexes[j].z);
+		glColor3f(green.r, green.g, green.b);
+
+		for (int i = 0; i < 6; i++) {
+			glBegin(GL_POLYGON);
+			for (int j = 0; j < 4; j++) {
+				glVertex3f(quads[i].vertexes[j].x, quads[i].vertexes[j].y, quads[i].vertexes[j].z);
+			}
+			glEnd();
 		}
-		glEnd();
 	}
+	else {
+		glColor3f(white.r, white.g, white.b);
 
+		glEnable(GL_TEXTURE_2D);
+
+		for (int i = 0; i < 6; i++) {
+
+			glBindTexture(GL_TEXTURE_2D, wallTexture.id);
+			glBegin(GL_POLYGON);
+
+			glTexCoord2f(0.0f, 1.0f);
+			glVertex3f(quads[i].vertexes[0].x, quads[i].vertexes[0].y, quads[i].vertexes[0].z);
+
+			glTexCoord2f(1.0f, 1.0f);
+			glVertex3f(quads[i].vertexes[1].x, quads[i].vertexes[1].y, quads[i].vertexes[1].z);
+
+			glTexCoord2f(1.0f, 0.0f);
+			glVertex3f(quads[i].vertexes[2].x, quads[i].vertexes[2].y, quads[i].vertexes[2].z);
+
+			glTexCoord2f(0.0f, 0.0f);
+			glVertex3f(quads[i].vertexes[3].x, quads[i].vertexes[3].y, quads[i].vertexes[3].z);
+
+			glEnd();
+		}
+		glDisable(GL_TEXTURE_2D);
+	}
+}
+
+void loadTexture(Texture& texture) {
+	texture.id;
+
+	glGenTextures(map.width * map.height * 6, &texture.id);
+	glBindTexture(GL_TEXTURE_2D, texture.id);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture.width, texture.height, 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, texture.img.data);
 }
 
 MapPosition startPosition, endPosition;
@@ -152,7 +198,7 @@ void drawMaze(Map map) {
 				wall.x = j * wall.size;
 				wall.y = map.height * wall.size - (i + 1) * wall.size;
 				wall.z = 0;
-				drawWall(wall);
+				drawCube(wall, false);
 			}
 		}
 	}
@@ -197,11 +243,15 @@ void render() {
 
 	glEnable(GL_LIGHTING);
 
-
 	glEnable(GL_DEPTH_TEST);
 
-
 	drawMaze(map);
+
+	playerCube.x = player.y * MAP_BLOCK_LENGTH + MAP_BLOCK_LENGTH / 2 - PLAYER_CUBE_SIZE / 2;
+	playerCube.y = map.height * MAP_BLOCK_LENGTH - player.x * MAP_BLOCK_LENGTH - MAP_BLOCK_LENGTH / 2 - PLAYER_CUBE_SIZE / 2;
+	playerCube.z = 0;
+	playerCube.size = PLAYER_CUBE_SIZE;
+	drawCube(playerCube, true);
 
 	glutSwapBuffers();
 }
@@ -263,6 +313,28 @@ void init() {
 	wallMaterial.emission[2] = white.b;
 	wallMaterial.emission[3] = 0;
 	wallMaterial.shininess = 20;
+
+	playerMaterial.ambient[0] = 0.0f;
+	playerMaterial.ambient[1] = 0.0f;
+	playerMaterial.ambient[2] = 0.5f;
+	playerMaterial.ambient[3] = 1.0f;
+	playerMaterial.diffuse[0] = 0.0f;
+	playerMaterial.diffuse[1] = 0.0f;
+	playerMaterial.diffuse[2] = 0.5f;
+	playerMaterial.diffuse[3] = 1.0f;
+	playerMaterial.specular[0] = 0.0f;
+	playerMaterial.specular[1] = 0.0f;
+	playerMaterial.specular[2] = 0.8f;
+	playerMaterial.specular[3] = 1.0f;
+	playerMaterial.emission[0] = green.r;
+	playerMaterial.emission[1] = green.g;
+	playerMaterial.emission[2] = green.b;
+	playerMaterial.emission[3] = 0;
+	playerMaterial.shininess = 20;
+
+	wallTexture.img = imread("$(SolutionDir)/Maze/texture.bmp");
+	wallTexture.width = wallTexture.img.cols;
+	wallTexture.height = wallTexture.img.rows;
 
 	// Using loop to find out the start and end position from the map array
 	for (int i = 0; i < map.width; i++) {
