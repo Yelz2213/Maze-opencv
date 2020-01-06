@@ -1,2 +1,4 @@
 ﻿  main.cpp
+C:\Users\user\source\repos\Maze\Maze\main.cpp(61,63): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
+C:\Users\user\source\repos\Maze\Maze\main.cpp(60,31): warning C4244: 'argument': conversion from 'int' to 'GLfloat', possible loss of data
   Maze.vcxproj -> C:\Users\user\source\repos\Maze\x64\Debug\Maze.exe
