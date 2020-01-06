@@ -5,7 +5,7 @@ Starting Point
 The game idea is basic on the seminar topic during the lab session which is called Dungeon Crawler Map.
 
 
-<<<The concept of the Maze Game>>>
+__The concept of the Maze Game__
 
 | 1 - Using an array to create a map /n
 | 2 - Render the maze by for-loop, the maze is combined by walls
