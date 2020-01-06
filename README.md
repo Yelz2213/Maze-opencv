@@ -7,7 +7,7 @@ The game idea is basic on the seminar topic during the lab session which is call
 
 <<<The concept of the Maze Game>>>
 
-| 1 - Using an array to create a map
+| 1 - Using an array to create a map \n
 | 2 - Render the maze by for-loop, the maze is combined by walls
 | 3 - Spawn the player in the place of '2'
 | 4 - The player can play in first-person and third-person
